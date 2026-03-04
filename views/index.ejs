@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand__logo">★</div>
+      <div>
+        <div class="brand__title">Good News Machine</div>
+        <div class="brand__tag">pink • retro • user-powered</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <% if (mostRecent) { %>
+      <section class="card card--featured">
+        <div class="card__kicker">Most recent drop</div>
+        <div class="card__big"><%= mostRecent.message %></div>
+        <div class="card__meta">
+          <span class="pill"><%= mostRecent.dateLabel %></span>
+          <span class="pill">Votes: <strong><%= mostRecent.votes %></strong></span>
+          <span class="pill">Author: <strong><%= mostRecent.author.username %> (posts: <%= mostRecent.author.posts %>)</strong></span>
+        </div>
+      </section>
+    <% } else { %>
+      <section class="card card--featured">
+        <div class="card__kicker">No entries yet</div>
+        <div class="card__big">Be the first to post some good news ✨</div>
+      </section>
+    <% } %>
+
+    <section class="grid">
+      <section class="card">
+        <h2 class="h2">Submit good news</h2>
+        <form action="/goodnews" method="post" class="form">
+          <label class="label" for="message">What’s the good news?</label>
+          <textarea
+            id="message"
+            name="message"
+            class="textarea"
+            maxlength="280"
+            placeholder="Example: Our class finally got MongoDB working 😭🔥"
+            required
+          ></textarea>
+          <select name="userId" required>
+            <option value="">Select Author</option>
+            <% users.forEach(user => { %>
+              <option value="<%= user._id %>">
+                <%= user.username %>
+              </option>
+            <% }) %>
+          </select>
+          <div class="form__row">
+            <button class="btn btn--primary" type="submit">Post it</button>
+            <div class="hint">Max 280 chars. Keep it school-appropriate.</div>
+          </div>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2 class="h2">All good news</h2>
+
+        <div class="tableWrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Good news</th>
+                <th class="th-center">Author</th>
+                <th class="th-center">Date</th>
+                <th class="th-center">Votes</th>
+                <th class="th-center">Vote</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% entries.forEach(e => { %>
+                <tr>
+                  <td class="td-message"><%= e.message %></td>
+                  <td class="td-center"><strong><%= e.author.username %></strong></td>
+                  <td class="td-center"><%= e.dateLabel %></td>
+                  <td class="td-center"><strong><%= e.votes %></strong></td>
+                  <td class="td-center">
+                    <div class="vote">
+                      <form action="/goodnews/<%= e._id %>/vote" method="post">
+                        <input type="hidden" name="dir" value="up" />
+                        <button class="btn btn--vote" type="submit" aria-label="Upvote">▲</button>
+                      </form>
+                      <form action="/goodnews/<%= e._id %>/vote" method="post">
+                        <input type="hidden" name="dir" value="down" />
+                        <button class="btn btn--vote" type="submit" aria-label="Downvote">▼</button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              <% }) %>
+
+              <% if (entries.length === 0) { %>
+                <tr>
+                  <td colspan="4" class="empty">Nothing here yet. Start the vibe 👇</td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <footer class="footer">
+    Made with ✨ and MongoDB
+  </footer>
+</body>
+</html>
